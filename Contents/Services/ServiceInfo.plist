@@ -23,6 +23,9 @@
 				<string>http://nlds82.cdnl3nl.neulion.com/.+</string>
 				<string>http://nlds53.cdnl3nl.neulion.com/.+</string>
 				<string>http://nlds84.cdnl3nl.neulion.com/.+</string>
+				<string>http://static.now.nfl.com/.+</string>
+				<string>http://nflioslive-i.akamaihd.net/.+</string>
+				<string>http://nflnowlive.nfln.nfl.com/.+</string>
 			</array>
 		</dict>
 	</dict>
