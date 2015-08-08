@@ -64,7 +64,7 @@ def VideoMainMenu():
 	oc.add(DirectoryObject(key = Callback(NFLMyTeamMenu), title=sTitle, summary="Set your favourite team in Preferences and browse videos for that team here", thumb=R("%s.png" % Prefs['team'])))
 	oc.add(DirectoryObject(key = Callback(NFLNowMenu), title="NFL Now", summary="Browse videos from NFL Now", thumb=R("nflnow.png")))
 	oc.add(DirectoryObject(key = Callback(GamepassMenu), title="NFL GamePass", summary="NFL GamePass subscribers only", thumb=R("gamepass.png")))
-	oc.add(DirectoryObject(key = Callback(GamerewindMenu), title="NFL Game Rewind", summary="NFL Game Rewind subscribers only", thumb=R("gamerewind.png")))
+	oc.add(DirectoryObject(key = Callback(GamerewindMenu), title="NFL GamePass US", summary="NFL GamePass US subscribers only", thumb=R("gamepass.png")))
 	oc.add(PrefsObject(title="Preferences", summary="Set My Team. Enter subscription details for Gamepass or NFL Network Live", thumb=R("icon-prefs.png")))
 	return oc
 
@@ -238,7 +238,7 @@ def GamepassPlay(week, season, week_title):
 	oc = ObjectContainer(title2=week_title)
 	
 	list = HTML.ElementFromURL(GAMEPASS_SCHEDULE, errors='ignore', values={'week':week, 'season':season}, cacheTime=1)
-
+	
 	for stream in list.xpath('//td[@class="gameTile"]/*/parent::td'):
 		sTeam1 = stream.xpath('./table/tr[2]/td[2]/text()')[0]
 		sTeam2 = stream.xpath('./table/tr[3]/td[2]/text()')[0]
@@ -336,6 +336,12 @@ def NflRedzoneArchiveWeek(season):
 	if season == "2013":
 		weeks = {'2013/09/08': '2013 Week 1', '2013/09/15': '2013 Week 2','2013/09/22': '2013 Week 3','2013/09/29': '2013 Week 4','2013/10/06': '2013 Week 5', '2013/10/13': '2013 Week 6', '2013/10/20': '2013 Week 7', '2013/10/27': '2013 Week 8', '2013/11/03': '2013 Week 9', '2013/11/10': '2013 Week 10', '2013/11/17': '2013 Week 11', '2013/11/24': '2013 Week 12', '2013/12/01': '2013 Week 13', '2013/12/08': '2013 Week 14', '2013/12/15': '2013 Week 15', '2013/12/22': '2013 Week 16', '2013/12/29': '2013 Week 17'}
 		orderedWeeks = ['2013/09/08', '2013/09/15','2013/09/22','2013/09/29','2013/10/06', '2013/10/13', '2013/10/20', '2013/10/27', '2013/11/03', '2013/11/10', '2013/11/17', '2013/11/24', '2013/12/01', '2013/12/08', '2013/12/15', '2013/12/22', '2013/12/29']
+	if season == "2014":
+		weeks = {'2014/09/07': '2014 Week 1', '2014/09/14': '2014 Week 2','2014/09/21': '2014 Week 3','2014/09/28': '2014 Week 4','2014/10/05': '2014 Week 5', '2014/10/12': '2014 Week 6', '2014/10/19': '2014 Week 7', '2014/10/26': '2014 Week 8', '2014/11/02': '2014 Week 9', '2014/11/09': '2014 Week 10', '2014/11/16': '2014 Week 11', '2014/11/23': '2014 Week 12', '2014/11/30': '2014 Week 13', '2014/12/07': '2014 Week 14', '2014/12/14': '2014 Week 15', '2014/12/21': '2014 Week 16', '2014/12/28': '2014 Week 17'}
+		orderedWeeks = ['2014/09/07', '2014/09/14','2014/09/21','2014/09/28','2014/10/05', '2014/10/12', '2014/10/19', '2014/10/26', '2014/11/02', '2014/11/09', '2014/11/16', '2014/11/23', '2014/11/30', '2014/12/07', '2014/12/14', '2014/12/21', '2014/12/28']
+	if season == "2015":
+		weeks = {'2015/09/13': '2015 Week 1', '2015/09/20': '2015 Week 2','2015/09/27': '2015 Week 3','2015/10/04': '2015 Week 4','2015/10/11': '2015 Week 5', '2015/10/18': '2015 Week 6', '2015/10/25': '2015 Week 7', '2015/11/01': '2015 Week 8', '2015/11/08': '2015 Week 9', '2015/11/15': '2015 Week 10', '2015/11/22': '2015 Week 11', '2015/11/29': '2015 Week 12', '2015/12/06': '2015 Week 13', '2015/12/13': '2015 Week 14', '2015/12/20': '2015 Week 15', '2015/12/27': '2015 Week 16', '2016/01/03': '2015 Week 17'}
+		orderedWeeks = ['2015/09/13', '2015/09/20','2015/09/27','2015/10/04','2015/10/11', '2015/10/18', '2015/10/25', '2015/11/01', '2015/11/08', '2015/11/15', '2015/11/22', '2015/11/29', '2015/12/06', '2015/12/13', '2015/12/20', '2015/12/27', '2016/01/03']
 	
 	for week in orderedWeeks:
 		week_title = weeks[week]
@@ -386,15 +392,10 @@ def NFLNArchivePlay(cid, title):
 	for stream in program_page:
 		sTitle = stream.xpath('.//name')[0].text
 		sThumb = NFLNAIMAGE + stream.xpath('.//image')[0].text
-		sStreamURL = stream.xpath('.//publishPoint')[0].text
-		sStreamURL = sStreamURL.replace("adaptive","http").replace(":443","")
-		if sStreamURL == "":
-			sStreamURL="Cannotbeplayed"
-		sSummary = stream.xpath('.//runtime')[0].text + " Minutes"
-		if sStreamURL == "Cannotbeplayed":
-			Log(sTitle + " can not be listed due to an error by NFL Gamepass with the URL listed for this stream")
-		else:
-			oc.add(VideoClipObject(url=sStreamURL+"#"+sTitle, title=sTitle, summary=sSummary, thumb=sThumb))
+		sRuntime = stream.xpath('.//runtime')[0].text
+		sStreamID = stream.xpath('.//id')[0].text
+		sSummary = sRuntime + " Minutes"
+		oc.add(VideoClipObject(url="http://gamepass.nfl.com/nflgp/console.jsp?nfnas=#"+sTitle+"#"+sStreamID, title=sTitle, summary=sSummary, thumb=sThumb))
 
 	return oc
 	
@@ -403,9 +404,9 @@ def NFLNArchivePlay(cid, title):
 @route('/video/nflvideos/gamerewind')
 def GamerewindMenu():
 
-	oc = ObjectContainer(title2="NFL Game Rewind")
+	oc = ObjectContainer(title2="NFL Game GamePass US")
 	
-	oc.add(DirectoryObject(key=Callback(GamerewindSeason), title="Archive", thumb=R("gamerewind.png"), summary="Archived games from this season back to 2012"))
+	oc.add(DirectoryObject(key=Callback(GamerewindSeason), title="Archive", thumb=R("gamepass.png"), summary="Archived games from this season back to 2012"))
 	
 	return oc
 
@@ -414,12 +415,12 @@ def GamerewindMenu():
 @route('/video/nflvideos/gamerewindseason')
 def GamerewindSeason():
 
-	oc = ObjectContainer(title2="NFL Game Rewind")
+	oc = ObjectContainer(title2="NFL Game GamePass US")
 
 	year = Datetime.Now().year if Datetime.Now().month < 7 else Datetime.Now().year+1
 
 	for season in reversed(range(2012, year)):
-		oc.add(DirectoryObject(key = Callback(GamerewindWeek, season=str(season)), title=str(season), thumb=R("gamerewind.png")))
+		oc.add(DirectoryObject(key = Callback(GamerewindWeek, season=str(season)), title=str(season), thumb=R("gamepass.png")))
 
 	return oc
 
@@ -428,7 +429,7 @@ def GamerewindSeason():
 @route('/video/nflvideos/gamerewindweek')
 def GamerewindWeek(season):
 
-	oc = ObjectContainer(title2="NFL Game Rewind")
+	oc = ObjectContainer(title2="NFL GamePass US")
 	
 	weeks = {'201': 'Week 1', '202': 'Week 2', '203': 'Week 3', '204': 'Week 4', '205': 'Week 5', '206': 'Week 6', '207': 'Week 7', '208': 'Week 8', '209': 'Week 9', '210': 'Week 10', '211': 'Week 11', '212': 'Week 12', '213': 'Week 13', '214': 'Week 14', '215': 'Week 15', '216': 'Week 16', '217': 'Week 17', '218': 'Wild Card Round', '219': 'Divisional Round', '220': 'Championship Round', '221': 'Pro Bowl', '222': 'Super Bowl'}
 	orderedWeeks = ['201', '202', '203', '204', '205', '206', '207', '208', '209', '210', '211', '212', '213', '214', '215', '216', '217', '218', '219', '220', '221', '222']
@@ -437,18 +438,18 @@ def GamerewindWeek(season):
 	if str(currentSeason) == season:
 		page = HTML.ElementFromURL(GAMEREWIND_SCHEDULE_WEEK, errors='ignore', cacheTime=1)
 		currentWeek = page.xpath("//select[@id = 'weekSelect']/option[@selected = 'true']")[0].get("value")
-		oc.add(DirectoryObject(key = Callback(GamerewindPlay, week=currentWeek, season=season, week_title=weeks[currentWeek]), title = "Current Week", thumb=R("gamerewind.png")))
+		oc.add(DirectoryObject(key = Callback(GamerewindPlay, week=currentWeek, season=season, week_title=weeks[currentWeek]), title = "Current Week", thumb=R("gamepass.png")))
 	
 		try:
 			if currentWeek[-1:] != "1":
 				lastWeek = str(int(currentWeek) - 1)
-				oc.add(DirectoryObject(key = Callback(GamerewindPlay, week=lastWeek, season=season, week_title=weeks[lastWeek]), title = "Last Week", thumb=R("gamerewind.png")))
+				oc.add(DirectoryObject(key = Callback(GamerewindPlay, week=lastWeek, season=season, week_title=weeks[lastWeek]), title = "Last Week", thumb=R("gamepass.png")))
 		except:
 			Log("Last weeks games not available")
 
 	for week in orderedWeeks:
 		week_title = weeks[week]
-		oc.add(DirectoryObject(key = Callback(GamerewindPlay, week=week, season=season, week_title=week_title), title = week_title, thumb=R("gamerewind.png")))
+		oc.add(DirectoryObject(key = Callback(GamerewindPlay, week=week, season=season, week_title=week_title), title = week_title, thumb=R("gamepass.png")))
 	
 	return oc
 	
@@ -459,19 +460,32 @@ def GamerewindPlay(week, season, week_title):
 
 	oc = ObjectContainer(title2=week_title)
 	
-	list = HTML.ElementFromURL(GAMEREWIND_SCHEDULE, errors='ignore', values={'week':week, 'season':season}, cacheTime=1)
+	username = Prefs['username']
+	password = Prefs['password']
+	
+	login_url = "https://gamepass.nfl.com/nflgp/secure/schedule"
+	
+	authentication_url = "https://gamepass.nfl.com/nflgp/secure/nfllogin"
+	post_values = {
+		'username' : username,
+		'password' : password
+		}
 
+	login = HTTP.Request(url=authentication_url, values=post_values, cacheTime=0).content
+	
+	cookie_values = HTTP.CookiesForURL(login_url)
+	headers_value = {'Cookie' : cookie_values}
+	
+	list = HTML.ElementFromURL(GAMEPASS_SCHEDULE, errors='ignore', values={'week':week, 'season':season}, headers=headers_value, cacheTime=1)
+	
 	for stream in list.xpath('//td[@class="gameTile"]/*/parent::td'):
 		sTeam1 = stream.xpath('./table/tr[2]/td[2]/text()')[0]
 		sTeam2 = stream.xpath('./table/tr[3]/td[2]/text()')[0]
 		sTitle = "%s @ %s" % (sTeam1,sTeam2)
-		try:
-			sStreamURL = stream.xpath('./table/tr[3]/td[3]/a')[0].get('href')
-			sStreamURL = sStreamURL.replace("javascript:launchApp('","http://gamerewind.nfl.com/nflgr/console.jsp?eid=").replace("')","")
-		except:
-			sStreamURL = "http://gamerewind.nfl.com/nflgr/console.jsp?eid=blahblah"
-		oc.add(VideoClipObject(url=sStreamURL + "#Condensed", title=sTitle + " - Condensed Game",  thumb=R("icon-gamerewind.png")))
-		oc.add(VideoClipObject(url=sStreamURL, title=sTitle + " - Full Length Game",  thumb=R("icon-gamerewind.png")))
+		sStreamURL = stream.xpath('./table/tr[3]/td[3]/a')[0].get('href')
+		sStreamURL = sStreamURL = sStreamURL.replace("javascript:launchApp('","http://gamerewind.nfl.com/nflgr/console.jsp?eid=").replace("')","")
+		oc.add(VideoClipObject(url=sStreamURL + "#Condensed", title=sTitle + " - Condensed Game",  thumb=R("icon-gamepass.png")))
+		oc.add(VideoClipObject(url=sStreamURL, title=sTitle + " - Full Length Game",  thumb=R("icon-gamepass.png")))
 	return oc
 	
 ###################################################################################################	
@@ -486,7 +500,6 @@ def NflNetworkArchiveMenu():
 	oc.add(DirectoryObject(key=Callback(NFLNArchivePlay, cid="220", title="Hard Knocks 2014"), title="Hard Knocks 2014", thumb=R("nfl-network.png"), summary="Hard Knocks 2014"))
 	oc.add(DirectoryObject(key=Callback(NFLNArchivePlay, cid="218", title="A Football Life 2014"), title="A Football Life 2014", thumb=R("nfl-network.png"), summary="A Football Life 2014"))
 	oc.add(DirectoryObject(key=Callback(NFLNArchivePlay, cid="222", title="Hall of Fame 2014"), title="Hall of Fame 2014", thumb=R("nfl-network.png"), summary="Hall of Fame 2014"))	
-	oc.add(DirectoryObject(key=Callback(NFLNArchivePlay, cid="219", title="NFL Films Presents 2014"), title="NFL Films Presents 2014", thumb=R("nfl-network.png"), summary="NFL Films Presents 2014"))
 	oc.add(DirectoryObject(key=Callback(NFLNArchivePlay, cid="213", title="Playbook 2014"), title="Playbook 2014", thumb=R("nfl-network.png"), summary="Playbook 2014"))
 	oc.add(DirectoryObject(key=Callback(NFLNArchivePlay, cid="215", title="Sound FX 2014"), title="Sound FX 2014", thumb=R("nfl-network.png"), summary="Sound FX 2014"))
 	oc.add(DirectoryObject(key=Callback(NFLNArchivePlay, cid="217", title="Top 100 Players of 2014"), title="Top 100 Players of 2014", thumb=R("nfl-network.png"), summary="Top 100 Players of 2014"))
@@ -543,7 +556,6 @@ def NFLNowChannel(sChannelid, sTitle):
 	return oc
 
 ###################################################################################################
-
 
 @route('/video/nflvideos/nflnowlive')	
 def NFLNowLive():
