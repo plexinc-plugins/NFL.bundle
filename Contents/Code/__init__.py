@@ -371,14 +371,11 @@ def NFLNArchivePlay(cid, title):
 	# seems to log in each time you go back to the gamepass menu. Will fix in later update
 	
 	login_url = "https://gamepass.nfl.com/nflgp/secure/schedule"
-	
-	authentication_url = "https://id.s.nfl.com/login"
+		
+	authentication_url = "https://gamepass.nfl.com/nflgp/secure/nfllogin"
 	post_values = {
 		'username' : username,
-		'password' : password,
-		'vendor_id' : 'nflptnrnln',
-		'success_url' : 'https://network.nfl.com/nfln/secure/login?redirect=schedule',
-		'error_url' : 'https://network.nfl.com/nfln/secure/login?redirect=schedule'
+		'password' : password
 		}
 
 	login = HTTP.Request(url=authentication_url, values=post_values, cacheTime=0).content
