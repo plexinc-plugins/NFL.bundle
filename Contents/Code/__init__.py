@@ -12,7 +12,7 @@ LATEST_VIDEOS				= 'http://www.nfl.com/feeds-rs/videos/byChannel/nfl-videos.json
 NFL_NETWORK_LIVE			= 'https://www.nflgamepass.com/api/en/content/v1/web/network/data'
 NFL_REDZONE					= 'https://www.nflgamepass.com/api/en/content/v1/web/redzone/videos'
 GAMEPASS_SCHEDULE_WEEK		= 'https://www.nflgamepass.com/api/en/content/v1/web/games/seasons'
-GAMEPASS_SCHEDULE			= 'https://www.nflgamepass.com/v1/web/games/%s/%s/%s/list'
+GAMEPASS_SCHEDULE			= 'https://www.nflgamepass.com/api/en/content/v1/web/games/%s/%s/%s/list'
 NFL_VIDEOS_JSON				= 'http://www.nfl.com/static/embeddablevideo/%s.json'
 NFLNA_PROGRAMS				= 'https://www.nflgamepass.com/api/en/content/v1/web/network/programs'
 NFLGAMEPASS_TEAMS			= 'https://www.nflgamepass.com/api/en/content/v1/web/teams/list'
@@ -154,12 +154,12 @@ def GamepassMenu():
 
 	oc = ObjectContainer(title2="NFL Game Pass")
 	
-	oc.add(DirectoryObject(key=Callback(GamepassPlayweek), title="Live Games", thumb=R("gamepass-live.png"), summary="This week's Live Games"))
+	oc.add(DirectoryObject(key=Callback(GamepassPlayweek), title="This Week's Games", thumb=R("gamepass-live.png"), summary="This Week's Games"))
 	oc.add(DirectoryObject(key=Callback(GamepassSeason), title="Archived Games", thumb=R("gamepass.png"), summary="Archived games from this season back to 2013"))
 	oc.add(DirectoryObject(key=Callback(GamepassTeamMenu), title="Team Games", summary="Watch Games for a team of your choice", thumb=R("gamepass.png")))
 	oc.add(DirectoryObject(key=Callback(NflNetworkMenu), title="NFL Network Live", summary="Watch NFL Network Live", thumb=R("nfl-network-live.png")))
 	oc.add(DirectoryObject(key=Callback(NflNetworkArchiveMenu), title="NFL Network Archive", summary="Watch NFL Network Archived Shows", thumb=R("nfl-network.png")))
-#	oc.add(DirectoryObject(key=Callback(NflRedzoneMenu), title="NFL Redzone Live", summary="Watch NFL Redzone Live", thumb=R("redzone-logo-live.png")))
+	oc.add(DirectoryObject(key=Callback(NflRedzoneMenu), title="NFL Redzone Live", summary="Watch NFL Redzone Live", thumb=R("redzone-logo-live.png")))
 #	oc.add(DirectoryObject(key=Callback(NflRedzoneArchive), title="NFL Redzone Archive", thumb=R("redzone-logo.png"), summary="Archived Redzone channel from this season back to 2016"))
 	
 	return oc
@@ -217,19 +217,6 @@ def GamepassPlay(week, season, week_title):
 	list = JSON.ObjectFromURL(week, cacheTime=1)
 	
 	try:
-		for stream in list['modules']['weekScheduledGames']['content']:
-			sTeam1 = stream['visitorNickName']
-			sTeam2 = stream['homeNickName']
-			sTitle = "Scheduled - %s @ %s" % (sTeam1,sTeam2)
-			sStreamURL = "https://www.nflgamepass.com/api/en/content/v1/web/games/" + season + "/" + str(stream['gameId']) + "/data"
-			try:
-				videoId = str(JSON.ObjectFromURL(sStreamURL)['modules']['singlegame']['content'][0]['video']['videoId'])
-			except:
-				videoId = stream['homeNickName']
-			oc.add(VideoClipObject(url="https://www.nflgamepass.com/api/en/content/v1/diva/" + videoId, title=sTitle,  thumb=R("icon-gamepass.png")))
-	except:
-		Log("No Scheduled Games")
-	try:
 		for stream in list['modules']['weekLiveGames']['content']:
 			sTeam1 = stream['visitorNickName']
 			sTeam2 = stream['homeNickName']
@@ -265,6 +252,19 @@ def GamepassPlay(week, season, week_title):
 				Log("No Full Length Games")
 	except:
 		Log("No Completed Games")
+	try:
+		for stream in list['modules']['weekScheduledGames']['content']:
+			sTeam1 = stream['visitorNickName']
+			sTeam2 = stream['homeNickName']
+			sTitle = "Scheduled - %s @ %s" % (sTeam1,sTeam2)
+			sStreamURL = "https://www.nflgamepass.com/api/en/content/v1/web/games/" + season + "/" + str(stream['gameId']) + "/data"
+			try:
+				videoId = str(JSON.ObjectFromURL(sStreamURL)['modules']['singlegame']['content'][0]['video']['videoId'])
+			except:
+				videoId = stream['homeNickName']
+			oc.add(VideoClipObject(url="https://www.nflgamepass.com/api/en/content/v1/diva/" + videoId, title=sTitle,  thumb=R("icon-gamepass.png")))
+	except:
+		Log("No Scheduled Games")
 
 	return oc
 
@@ -283,19 +283,6 @@ def GamepassPlayweek():
 
 	gamelist = JSON.ObjectFromURL(GAMEPASS_SCHEDULE % (season, seasonType, week), cacheTime=1)
 	
-	try:
-		for stream in gamelist['modules']['weekScheduledGames']['content']:
-			sTeam1 = stream['visitorNickName']
-			sTeam2 = stream['homeNickName']
-			sTitle = "Scheduled - %s @ %s" % (sTeam1,sTeam2)
-			sStreamURL = "https://www.nflgamepass.com/api/en/content/v1/web/games/" + season + "/" + str(stream['gameId']) + "/data"
-			try:
-				videoId = str(JSON.ObjectFromURL(sStreamURL)['modules']['singlegame']['content'][0]['video']['videoId'])
-			except:
-				videoId = stream['homeNickName']
-			oc.add(VideoClipObject(url="https://www.nflgamepass.com/api/en/content/v1/diva/" + videoId, title=sTitle,  thumb=R("icon-gamepass.png")))
-	except:
-		Log("No Scheduled Games")
 	try:
 		for stream in gamelist['modules']['weekLiveGames']['content']:
 			sTeam1 = stream['visitorNickName']
@@ -332,6 +319,19 @@ def GamepassPlayweek():
 				Log("No Full Length Games")
 	except:
 		Log("No Completed Games")
+	try:
+		for stream in gamelist['modules']['weekScheduledGames']['content']:
+			sTeam1 = stream['visitorNickName']
+			sTeam2 = stream['homeNickName']
+			sTitle = "Scheduled - %s @ %s" % (sTeam1,sTeam2)
+			sStreamURL = "https://www.nflgamepass.com/api/en/content/v1/web/games/" + season + "/" + str(stream['gameId']) + "/data"
+			try:
+				videoId = str(JSON.ObjectFromURL(sStreamURL)['modules']['singlegame']['content'][0]['video']['videoId'])
+			except:
+				videoId = stream['homeNickName']
+			oc.add(VideoClipObject(url="https://www.nflgamepass.com/api/en/content/v1/diva/" + videoId, title=sTitle,  thumb=R("icon-gamepass.png")))
+	except:
+		Log("No Scheduled Games")
 
 	return oc
 
@@ -361,7 +361,6 @@ def NflRedzoneMenu():
 	
 	list = JSON.ObjectFromURL(NFL_REDZONE, errors='ignore', cacheTime=1)
 
-# A Guess on the VideoId will check once featured released for NFL Gamepass Europe	
 	videoId = str(list['modules']['redZoneLive']['content'][0]['videoId'])
 
 	oc.add(VideoClipObject(url="https://www.nflgamepass.com/api/en/content/v1/diva/" + videoId + "#NFLRL", title="NFL Redzone Live", summary="Watch NFL Redzone Live", thumb=R("icon-nfl-redzone-live.png")))
